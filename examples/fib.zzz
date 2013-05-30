@@ -1,0 +1,51 @@
+# Assumes the Fib # to compute is a command line arg, thus
+# is on the top of the stack
+
+CALL FIB
+DROP
+PT r1
+HALT
+
+fib:
+	# get args
+	PICK r2, 2
+	#PT r2
+
+	# we will be trashing these
+	# Do not need to push r2 as it is not used again
+	PUSH r3
+	PUSH r4
+
+	# check for base cases
+	JE base, r2, 0
+	JE base, r2, 1
+
+	# copy arg
+	MOV r3, r2
+
+	# lhs
+	SUB r3, 1
+	PUSH r3
+	CALL fib
+	DROP
+	# lhs result in r4
+	MOV r4, r1
+
+	# rhs
+	SUB r3, 1
+	PUSH r3
+	CALL fib
+	DROP
+	ADD r1, r4
+
+	JMP done
+base:
+	# return val
+	mov r1, r2
+
+done:
+	# restore regs
+	POP r4
+	POP r3
+
+	RET
