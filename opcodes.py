@@ -21,7 +21,7 @@ def mov((o0, o1), stack, regs, pc):
     elif is_reg(o1):
         regs[val(o0)] = regs[val(o1)]
     else:
-        bail("MOV: unmatched casei: %s" % operands)
+        bail("MOV: unmatched case: %s" % operands)
 
 def add(operands, stack, regs, pc):
     pass
