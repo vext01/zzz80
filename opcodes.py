@@ -49,6 +49,23 @@ def sub(args, stack, regs, pc):
     else:
         bail("SUB: unmatched case: %s" % args)
 
+def push(args, stack, regs, pc):
+    (o0,) = args
+
+    if is_const(o0):
+        stack.append(val(o0))
+    elif is_reg(o0):
+        stack.append(regs[val(o0)])
+    else:
+        bail("PUSH: unmatched case: %s" % args)
+
+def pop(args, stack, regs, pc):
+    (o0,) = args
+
+    if not is_reg(o0): bail("POP: type error: %s" % args)
+
+    regs[val(o0)] = stack.pop()
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, pc):
     s = sys.stderr.write

@@ -15,6 +15,8 @@ OPTAB = {
     "DUMP" : [opcodes.dump, 0],
     "ADD" : [opcodes.add, 2],
     "SUB" : [opcodes.sub, 2],
+    "PUSH": [opcodes.push, 1],
+    "POP": [opcodes.pop, 1],
 }
 
 # returns a tuple (x, v) where x \in {'r', 'c'} for reg/const
