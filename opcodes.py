@@ -110,6 +110,8 @@ def je(args, stack, regs, lab_map):
     else:
         advance_pc(regs)
 
+def halt(args, stack, regs, lab_map): sys.exit(0)
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write
