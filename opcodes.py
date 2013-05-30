@@ -16,6 +16,12 @@ def advance_pc(regs):
 
 def val(x): return x[1]
 
+def label_target(lab_map, lbl):
+    try:
+        return lab_map[lbl]
+    except KeyError:
+        bail("Bad label: %s" % lbl)
+
 # Opcode Handlers
 def nop(operands, stack, regs, lab_map):
     advance_pc(regs)
@@ -76,7 +82,6 @@ def push(args, stack, regs, lab_map):
 
 def pop(args, stack, regs, lab_map):
     (o0,) = args
-
     if not is_reg(o0): bail("POP: type error: %s" % args)
 
     regs[val(o0)] = stack.pop()
@@ -84,10 +89,25 @@ def pop(args, stack, regs, lab_map):
 
 def jmp(args, stack, regs, lab_map):
     (o0,) = args
-
     if not is_label(o0): bail("JMP: type error: %s" % args)
 
-    regs[0] = lab_map[val(o0)]
+    regs[0] = label_target(lab_map, val(o0))
+
+def je(args, stack, regs, lab_map):
+    (o0, o1, o2) = args
+
+    if not is_label(o0): bail("JE: type error: %s" % args)
+    if (not is_reg(o1)) and (not is_const(o1)): bail("JE: type error: %s" % args)
+    if (not is_reg(o2)) and (not is_const(o2)): bail("JE: type error: %s" % args)
+
+    cval = lambda x: val(x) if is_const(x) else regs[val(x)]
+    vals = [ cval(x) for x in [o1, o2] ]
+
+    if vals[0] == vals[1]:
+        # jump is taken
+        regs[0] = label_target(lab_map, val(o0))
+    else:
+        advance_pc(regs)
 
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
