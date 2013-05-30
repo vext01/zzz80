@@ -126,6 +126,11 @@ def pick(args, stack, regs, lab_map):
     regs[val(o0)] = stack[-val(o1)]
     advance_pc(regs)
 
+# discards top of stack
+def drop(args, stack, regs, lab_map):
+    stack.pop()
+    advance_pc(regs)
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write
