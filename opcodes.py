@@ -100,6 +100,7 @@ def je(args, stack, regs, lab_map):
     if (not is_reg(o1)) and (not is_const(o1)): bail("JE: type error: %s" % args)
     if (not is_reg(o2)) and (not is_const(o2)): bail("JE: type error: %s" % args)
 
+    # Slipped a lambda in to see what pypy makes of it...
     cval = lambda x: val(x) if is_const(x) else regs[val(x)]
     vals = [ cval(x) for x in [o1, o2] ]
 
