@@ -66,12 +66,10 @@ def suck_in():
     # integer identifiers so that interp_loop could do integer comparisons.
     # Let's see if pypy can optimise the string comparisons ;)
 
-    prog = dict() # Z -> instr
+    prog = []
     labmap = dict() # str -> Z for labels.
-    next_addr = 0
 
     # generate a .text-a-like mapping
-    #prog = dict((addr, parse_instr(lines[addr])) for addr in range(len(lines)))
     for line in lines:
 
         # special handling of labels
@@ -79,12 +77,11 @@ def suck_in():
             labmap[line[0:-1]] = len(prog)
             continue
 
-        prog[next_addr] = parse_instr(line)
-        next_addr += 1
+        prog.append(parse_instr(line))
 
     return (prog, labmap)
 
-def interp_loop(instr_map, lab_map):
+def interp_loop(prog, lab_map):
 
     # setup interpreter state
     stack = []
@@ -92,16 +89,17 @@ def interp_loop(instr_map, lab_map):
     pc = 0
 
     # main interpreter loop
+    print(prog)
     while True:
-        #print("PC: %d" % pc)
+        print("PC: %d" % pc)
 
         # fetch the instr
-        if not instr_map.has_key(pc): break # end of program
-        instr = instr_map[pc]
+        if pc >= len(prog): break # end program
+        instr = prog[pc]
 
         handler = instr[0]
         operands = instr[1:]
-        #print("OPCODE: %s   OPERANDS: %s" % (handler, operands))
+        print("OPCODE: %s   OPERANDS: %s" % (handler, operands))
 
         # dispatch the instr
         handler(operands, stack, regs, pc, lab_map)
