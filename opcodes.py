@@ -112,6 +112,13 @@ def je(args, stack, regs, lab_map):
 
 def halt(args, stack, regs, lab_map): sys.exit(0)
 
+def pt(args, stack, regs, lab_map):
+    (o0,) = args
+    if not is_reg(o0): bail("PRINT: type error: %s" % args)
+
+    print(regs[val(o0)])
+    advance_pc(regs)
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write
