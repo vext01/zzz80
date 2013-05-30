@@ -96,10 +96,9 @@ def suck_in():
 
     return (prog, labmap)
 
-def interp_loop(prog, lab_map):
+def interp_loop(prog, lab_map, stack):
 
     # setup interpreter state
-    stack = []
     regs = [0 for x in range(NUM_REGS)] # r0 is the PC
 
     # main interpreter loop
@@ -120,7 +119,13 @@ def interp_loop(prog, lab_map):
         #print_vm_state(regs, stack)
         #sys.stderr.write("\n\n")
 
-
 if __name__ == "__main__":
     (instr_map, lab_map) = suck_in()
-    interp_loop(instr_map, lab_map)
+
+    # command line args start on the stack
+    try:
+        stack = [ int(x) for x in sys.argv[1:] ]
+    except ValueError:
+        bail("bad argv")
+
+    interp_loop(instr_map, lab_map, stack)

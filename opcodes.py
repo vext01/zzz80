@@ -22,6 +22,12 @@ def label_target(lab_map, lbl):
     except KeyError:
         bail("Bad label: %s" % lbl)
 
+def stk_pop(stack):
+    try:
+        return stack.pop()
+    except IndexError:
+        bail("stack underflow")
+
 # Opcode Handlers
 def nop(operands, stack, regs, lab_map):
     advance_pc(regs)
@@ -84,7 +90,7 @@ def pop(args, stack, regs, lab_map):
     (o0,) = args
     if not is_reg(o0): bail("POP: type error: %s" % args)
 
-    regs[val(o0)] = stack.pop()
+    regs[val(o0)] = stk_pop(stack)
     advance_pc(regs)
 
 def jmp(args, stack, regs, lab_map):
@@ -123,12 +129,16 @@ def pick(args, stack, regs, lab_map):
     (o0,o1) = args
     if not is_reg(o0) or not is_const(o1): bail("PICK: type error: %s" % args)
 
-    regs[val(o0)] = stack[-val(o1)]
+    try:
+        regs[val(o0)] = stack[-val(o1)]
+    except IndexError:
+        bail("PICK: stack underflow")
+
     advance_pc(regs)
 
 # discards top of stack
 def drop(args, stack, regs, lab_map):
-    stack.pop()
+    stk_pop(stack)
     advance_pc(regs)
 
 def call(args, stack, regs, lab_map):
@@ -139,7 +149,7 @@ def call(args, stack, regs, lab_map):
     regs[0] = label_target(lab_map, val(o0))
 
 def ret(args, stack, regs, lab_map):
-    regs[0] = stack.pop()
+    regs[0] = stk_pop(stack)
 
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
