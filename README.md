@@ -18,6 +18,9 @@ The end goal is to JIT this with pypy.
 - Every stack element is of size 1 regardless of contents.
 - CALL/RET use the stack like most CPU architectures.
 - By convention, function args go on the stack like in x86.
+- The only way to read memory is to use POP or PICK. There are no
+  addressing modes per se. Every memory read or write is relative to
+  the stack top.
 
 Note that there is no memory other than the stack.
 
