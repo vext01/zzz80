@@ -13,6 +13,7 @@ OPTAB = {
     "NOP" : [opcodes.nop, 0],
     "MOV" : [opcodes.mov, 2],
     "DUMP" : [opcodes.dump, 0],
+    "ADD" : [opcodes.add, 2]
 }
 
 # returns a tuple (x, v) where x \in {'r', 'c'} for reg/const

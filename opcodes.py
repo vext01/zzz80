@@ -8,18 +8,23 @@ def is_reg(x):
 def is_const(x):
     return not is_reg(x)
 
+def val(x): return x[1]
+
 # Opcode Handlers
 def nop(operands, stack, regs, pc): pass
 
-def mov(operands, stack, regs, pc):
-    if not is_reg(operands[0]): bail("MOV: type error: %s" % operands)
+def mov((o0, o1), stack, regs, pc):
+    if not is_reg(o0): bail("MOV: type error: %s" % operands)
 
-    if is_const(operands[1]):
-        regs[operands[0][1]] = operands[1][1]
-    elif is_reg(operands[1]):
-        regs[operands[0][1]] = regs[operands[1][1]]
+    if is_const(o1):
+        regs[val(o0)] = val(o1)
+    elif is_reg(o1):
+        regs[val(o0)] = regs[val(o1)]
     else:
         bail("MOV: unmatched casei: %s" % operands)
+
+def add(operands, stack, regs, pc):
+    pass
 
 # for debugging purposes - prints the state of the interpreter
 def dump(operands, stack, regs, pc):
