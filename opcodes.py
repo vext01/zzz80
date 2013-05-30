@@ -130,7 +130,7 @@ def pick(args, stack, regs, lab_map):
     if not _is_reg(o0) or not _is_const(o1): bail("PICK: type error: %s" % args)
 
     try:
-        regs[_val(o0)] = stack[-_val(o1)]
+        regs[_val(o0)] = stack[-(_val(o1) + 1)]
     except IndexError:
         bail("PICK: stack underflow")
 

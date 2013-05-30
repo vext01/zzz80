@@ -8,7 +8,7 @@ HALT
 
 fib:
 	# get args
-	PICK r2, 2
+	PICK r2, 1
 	#PT r2
 
 	# we will be trashing these
