@@ -2,7 +2,7 @@
 
 import os, sys, string, re
 import opcodes
-from util import bail
+from util import bail, print_vm_state
 
 NUM_REGS = 8
 REG_NAMES = [ "R%d" % x for x in range(NUM_REGS) ]
@@ -104,6 +104,7 @@ def interp_loop(prog, lab_map):
 
     # main interpreter loop
     while True:
+
         # fetch the instr
         if regs[0] >= len(prog): break # end program
         instr = prog[regs[0]]
@@ -113,6 +114,12 @@ def interp_loop(prog, lab_map):
 
         # dispatch the instr
         handler(operands, stack, regs, lab_map)
+
+        # debug
+        #sys.stderr.write(str(instr) + "\n")
+        #print_vm_state(regs, stack)
+        #sys.stderr.write("\n\n")
+
 
 if __name__ == "__main__":
     (instr_map, lab_map) = suck_in()

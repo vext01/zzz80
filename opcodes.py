@@ -1,5 +1,5 @@
 import sys
-from util import bail
+from util import bail, print_vm_state
 
 # Utility Funcs
 def is_reg(x):
@@ -60,9 +60,9 @@ def sub(args, stack, regs, lab_map):
     if not is_reg(o0): bail("SUB: type error: %s" % args)
 
     if is_const(o1):
-        regs[val(o0)] += val(o1)
+        regs[val(o0)] -= val(o1)
     elif is_reg(o1):
-        regs[val(o0)] += regs[val(o1)]
+        regs[val(o0)] -= regs[val(o1)]
     else:
         bail("SUB: unmatched case: %s" % args)
 
@@ -143,9 +143,5 @@ def ret(args, stack, regs, lab_map):
 
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
-    s = sys.stderr.write
-    s("--- DUMP ---\n")
-    s("Registers: %s\n" % regs)
-    s("Stack: %s\n" % stack)
-    s("------------\n")
+    print_vm_state(regs, stack)
     advance_pc(regs)
