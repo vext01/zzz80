@@ -138,6 +138,9 @@ def call(args, stack, regs, lab_map):
     stack.append(regs[0] + 1) # push return addr
     regs[0] = label_target(lab_map, val(o0))
 
+def ret(args, stack, regs, lab_map):
+    regs[0] = stack.pop()
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write
