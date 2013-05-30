@@ -77,10 +77,6 @@ def suck_in():
     lines = [ x.strip() for x in lines]
     lines = [ x.upper() for x in lines if len(x) > 0 and not x.startswith("#") ]
 
-    # In a real language you would replace the instruction mnems with
-    # integer identifiers so that interp_loop could do integer comparisons.
-    # Let's see if pypy can optimise the string comparisons ;)
-
     prog = []
     labmap = dict() # str -> Z for labels.
 
