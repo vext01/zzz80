@@ -4,7 +4,7 @@ import os, sys, string
 import opcodes
 from util import bail
 
-NUM_REGS = 3
+NUM_REGS = 8
 REG_NAMES = [ "R%d" % x for x in range(NUM_REGS) ]
 
 # Opcode Table
