@@ -131,6 +131,13 @@ def drop(args, stack, regs, lab_map):
     stack.pop()
     advance_pc(regs)
 
+def call(args, stack, regs, lab_map):
+    (o0,) = args
+    if not is_label(o0): bail("CALL: type error: %s" % args)
+
+    stack.append(regs[0] + 1) # push return addr
+    regs[0] = label_target(lab_map, val(o0))
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write
