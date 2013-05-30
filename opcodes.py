@@ -11,9 +11,9 @@ def is_const(x):
 def val(x): return x[1]
 
 # Opcode Handlers
-def nop(operands, stack, regs, pc): pass
+def nop(operands, stack, regs, pc, lab_map): pass
 
-def mov(args, stack, regs, pc):
+def mov(args, stack, regs, pc, lab_map):
     (o0, o1) = args
 
     if not is_reg(o0): bail("MOV: type error: %s" % args)
@@ -25,7 +25,7 @@ def mov(args, stack, regs, pc):
     else:
         bail("MOV: unmatched case: %s" % args)
 
-def add(args, stack, regs, pc):
+def add(args, stack, regs, pc, lab_map):
     (o0, o1) = args
 
     if not is_reg(o0): bail("ADD: type error: %s" % args)
@@ -37,7 +37,7 @@ def add(args, stack, regs, pc):
     else:
         bail("ADD: unmatched case: %s" % args)
 
-def sub(args, stack, regs, pc):
+def sub(args, stack, regs, pc, lab_map):
     (o0, o1) = args
 
     if not is_reg(o0): bail("SUB: type error: %s" % args)
@@ -49,7 +49,7 @@ def sub(args, stack, regs, pc):
     else:
         bail("SUB: unmatched case: %s" % args)
 
-def push(args, stack, regs, pc):
+def push(args, stack, regs, pc, lab_map):
     (o0,) = args
 
     if is_const(o0):
@@ -59,7 +59,7 @@ def push(args, stack, regs, pc):
     else:
         bail("PUSH: unmatched case: %s" % args)
 
-def pop(args, stack, regs, pc):
+def pop(args, stack, regs, pc, lab_map):
     (o0,) = args
 
     if not is_reg(o0): bail("POP: type error: %s" % args)
@@ -67,7 +67,7 @@ def pop(args, stack, regs, pc):
     regs[val(o0)] = stack.pop()
 
 # for debugging purposes - prints the state of the interpreter
-def dump(args, stack, regs, pc):
+def dump(args, stack, regs, pc, lab_map):
     s = sys.stderr.write
     s("--- DUMP ---\n")
     s("Registers: %s\n" % regs)
