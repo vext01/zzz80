@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-import os, sys, string
+import os, sys, string, re
 import opcodes
 from util import bail
 
@@ -17,18 +17,26 @@ OPTAB = {
     "SUB" : [opcodes.sub, 2],
     "PUSH": [opcodes.push, 1],
     "POP": [opcodes.pop, 1],
+    "JMP" : [opcodes.jmp, 1],
 }
 
-# returns a tuple (x, v) where x \in {'r', 'c'} for reg/const
-# v is then either a numeric constant or a register number
+# returns a tuple (x, v) where x \in {'r', 'c', 'l'} for reg/const/label
+# v is then either a numeric constant, a register number or a label name
 def parse_operand(x):
+
+    # is it a register name?
     if x in REG_NAMES:
         return ('r', int(x[1:]))
 
+    # is it an integer constant?
     try:
         return ('c', int(x))
     except ValueError:
         pass
+
+    # a label name?
+    if re.match('^[\w-]+$', x) is not None:
+        return ('l', x)
 
     bail("Bad operand: %s" % x)
 
@@ -85,27 +93,19 @@ def interp_loop(prog, lab_map):
 
     # setup interpreter state
     stack = []
-    regs = [0 for x in range(NUM_REGS)]
-    pc = 0
+    regs = [0 for x in range(NUM_REGS)] # r0 is the PC
 
     # main interpreter loop
-    print(prog)
     while True:
-        print("PC: %d" % pc)
-
         # fetch the instr
-        if pc >= len(prog): break # end program
-        instr = prog[pc]
+        if regs[0] >= len(prog): break # end program
+        instr = prog[regs[0]]
 
         handler = instr[0]
         operands = instr[1:]
-        print("OPCODE: %s   OPERANDS: %s" % (handler, operands))
 
         # dispatch the instr
-        handler(operands, stack, regs, pc, lab_map)
-
-        # advance program counter
-        pc += 1
+        handler(operands, stack, regs, lab_map)
 
 if __name__ == "__main__":
     (instr_map, lab_map) = suck_in()
