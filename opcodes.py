@@ -119,6 +119,13 @@ def pt(args, stack, regs, lab_map):
     print(regs[val(o0)])
     advance_pc(regs)
 
+def pick(args, stack, regs, lab_map):
+    (o0,o1) = args
+    if not is_reg(o0) or not is_const(o1): bail("PICK: type error: %s" % args)
+
+    regs[val(o0)] = stack[-val(o1)]
+    advance_pc(regs)
+
 # for debugging purposes - prints the state of the interpreter
 def dump(args, stack, regs, lab_map):
     s = sys.stderr.write

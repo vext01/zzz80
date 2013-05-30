@@ -21,6 +21,7 @@ OPTAB = {
     "JE" : [opcodes.je, 3],
     "HALT" : [opcodes.halt, 0],
     "PT" : [opcodes.pt, 1],
+    "PICK" : [opcodes.pick, 2],
 }
 
 # returns a tuple (x, v) where x \in {'r', 'c', 'l'} for reg/const/label
