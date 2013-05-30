@@ -68,14 +68,31 @@ def suck_in():
     lines = src.split("\n")
     
     # strip cruft
-    lines = [ x.strip() for x in lines]
-    lines = [ x.upper() for x in lines if len(x) > 0 and not x.startswith("#") ]
+    lines_p = []
+    for l in lines:
+        l = l.upper()
+
+        # strip comments
+        try:
+            com_idx = l.index('#')
+        except ValueError:
+            com_idx = len(l)
+
+        l = l[0:com_idx]
+
+        # strip whitespace
+        l = l.strip()
+
+        # no blank lines
+        if len(l) == 0: continue
+
+        lines_p.append(l)
 
     prog = []
     labmap = dict() # str -> Z for labels.
 
     # generate a .text-a-like mapping
-    for line in lines:
+    for line in lines_p:
 
         # special handling of labels
         if(line.endswith(":")):

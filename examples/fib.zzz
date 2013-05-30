@@ -1,15 +1,12 @@
 # Assumes the Fib # to compute is a command line arg, thus
 # is on the top of the stack
 
-CALL FIB
-DROP
+CALL fib
 PT r1
 HALT
 
 fib:
-	# get args
-	PICK r2, 1
-	#PT r2
+	PICK r2, 1 # get argument off stack
 
 	# we will be trashing these
 	# Do not need to push r2 as it is not used again
@@ -20,16 +17,14 @@ fib:
 	JE base, r2, 0
 	JE base, r2, 1
 
-	# copy arg
-	MOV r3, r2
+	MOV r3, r2 # copy arg
 
 	# lhs
 	SUB r3, 1
 	PUSH r3
 	CALL fib
 	DROP
-	# lhs result in r4
-	MOV r4, r1
+	MOV r4, r1 # lhs result in r4
 
 	# rhs
 	SUB r3, 1
@@ -40,12 +35,11 @@ fib:
 
 	JMP done
 base:
-	# return val
-	mov r1, r2
+	mov r1, r2 # in base cases, return argument
 
 done:
 	# restore regs
 	POP r4
 	POP r3
 
-	RET
+	RET # return result of the above addition in r1
