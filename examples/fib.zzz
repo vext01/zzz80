@@ -35,7 +35,7 @@ fib:
 
 	JMP done
 base:
-	mov r1, r2 # in base cases, return argument
+	MOV r1, r2 # in base cases, return argument
 
 done:
 	# restore regs
