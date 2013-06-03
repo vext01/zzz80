@@ -35,16 +35,9 @@ def nop(operands, stack, regs, lab_map):
 def mov(args, stack, regs, lab_map):
     (o0, o1) = args
 
-    if not _is_reg(o0): bail("MOV: type error: %s" % args)
-
-    #regs[val(o0) = o1.value(regs)
-
-    if _is_const(o1):
-        regs[_val(o0)] = _val(o1)
-    elif _is_reg(o1):
-        regs[_val(o0)] = regs[_val(o1)]
-    else:
-        bail("MOV: unmatched case: %s" % args)
+    regno = o0.evaluate(regs)
+    rhs = o1.evaluate(regs)
+    o0.set(regs, rhs)
 
     _advance_pc(regs)
 

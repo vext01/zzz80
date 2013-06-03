@@ -40,13 +40,19 @@ class Instr:
 
 # -- Operands
 class Operand(object):
-    pass
+    def set(self, regs, v):
+        raise TypeError("Cannot set %s to a %s" % (self, v))
 
 class RegOperand(Operand):
     def __init__(self, v):
         self.register = v
 
     def __str__(self): return "reg(%s)" % self.register
+
+    def evaluate(self, regs): return regs[self.register]
+
+    def set(self, regs, v):
+        regs[self.register] = v
 
 class LabelOperand(Operand):
     def __init__(self, v):
@@ -59,6 +65,8 @@ class ConstOperand(Operand):
         self.value = v
 
     def __str__(self): return "const(%s)" % self.value
+
+    def evaluate(self, regs): return self.value # regs unused
 
 # returns a tuple (x, v) where x \in {'r', 'c', 'l'} for reg/const/label
 # v is then either a numeric constant, a register number or a label name
