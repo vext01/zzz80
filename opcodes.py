@@ -109,6 +109,7 @@ def drop(args, stack, regs, lab_map):
     _stk_pop(stack)
     _advance_pc(regs)
 
+# XXX tomorrow
 def call(args, stack, regs, lab_map):
     (o0,) = args
     if not _is_label(o0): bail("CALL: type error: %s" % args)
