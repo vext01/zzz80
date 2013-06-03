@@ -53,21 +53,12 @@ def sub(args, stack, regs, lab_map):
 
 def push(args, stack, regs, lab_map):
     (o0,) = args
-
-    if _is_const(o0):
-        stack.append(_val(o0))
-    elif _is_reg(o0):
-        stack.append(regs[_val(o0)])
-    else:
-        bail("PUSH: unmatched case: %s" % args)
-
+    stack.append(o0.evaluate(regs))
     _advance_pc(regs)
 
 def pop(args, stack, regs, lab_map):
     (o0,) = args
-    if not _is_reg(o0): bail("POP: type error: %s" % args)
-
-    regs[_val(o0)] = _stk_pop(stack)
+    o0.set(regs, _stk_pop(stack))
     _advance_pc(regs)
 
 def jmp(args, stack, regs, lab_map):
