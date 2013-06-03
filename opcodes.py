@@ -67,6 +67,7 @@ def jmp(args, stack, regs, lab_map):
 
     regs[0] = _label_target(lab_map, _val(o0))
 
+# XXX Tomorrow
 def je(args, stack, regs, lab_map):
     (o0, o1, o2) = args
 
@@ -89,17 +90,15 @@ def halt(args, stack, regs, lab_map): sys.exit(0)
 
 def pt(args, stack, regs, lab_map):
     (o0,) = args
-    if not _is_reg(o0): bail("PRINT: type error: %s" % args)
-
-    print(regs[_val(o0)])
+    print(o0.evaluate(regs))
     _advance_pc(regs)
 
 def pick(args, stack, regs, lab_map):
-    (o0,o1) = args
-    if not _is_reg(o0) or not _is_const(o1): bail("PICK: type error: %s" % args)
+    (o0, o1) = args
+    #if not _is_reg(o0) or not _is_const(o1): bail("PICK: type error: %s" % args)
 
     try:
-        regs[_val(o0)] = stack[-(_val(o1) + 1)]
+        o0.set(regs, stack[-(o1.evaluate(regs) + 1)])
     except IndexError:
         bail("PICK: stack underflow")
 
