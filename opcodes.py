@@ -43,30 +43,12 @@ def mov(args, stack, regs, lab_map):
 
 def add(args, stack, regs, lab_map):
     (o0, o1) = args
-
-    if not _is_reg(o0): bail("ADD: type error: %s" % args)
-
-    if _is_const(o1):
-        regs[_val(o0)] += _val(o1)
-    elif _is_reg(o1):
-        regs[_val(o0)] += regs[_val(o1)]
-    else:
-        bail("ADD: unmatched case: %s" % args)
-
+    o0.set(regs, o0.evaluate(regs) + o1.evaluate(regs))
     _advance_pc(regs)
 
 def sub(args, stack, regs, lab_map):
     (o0, o1) = args
-
-    if not _is_reg(o0): bail("SUB: type error: %s" % args)
-
-    if _is_const(o1):
-        regs[_val(o0)] -= _val(o1)
-    elif _is_reg(o1):
-        regs[_val(o0)] -= regs[_val(o1)]
-    else:
-        bail("SUB: unmatched case: %s" % args)
-
+    o0.set(regs, o0.evaluate(regs) - o1.evaluate(regs))
     _advance_pc(regs)
 
 def push(args, stack, regs, lab_map):
