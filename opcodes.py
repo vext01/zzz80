@@ -37,6 +37,8 @@ def mov(args, stack, regs, lab_map):
 
     if not _is_reg(o0): bail("MOV: type error: %s" % args)
 
+    #regs[val(o0) = o1.value(regs)
+
     if _is_const(o1):
         regs[_val(o0)] = _val(o1)
     elif _is_reg(o1):
@@ -107,6 +109,7 @@ def je(args, stack, regs, lab_map):
     if (not _is_reg(o2)) and (not _is_const(o2)): bail("JE: type error: %s" % args)
 
     # Slipped a lambda in to see what pypy makes of it...
+    # XXX inline body of lambda
     cval = lambda x: _val(x) if _is_const(x) else regs[_val(x)]
     vals = [ cval(x) for x in [o1, o2] ]
 
