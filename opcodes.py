@@ -63,26 +63,17 @@ def pop(args, stack, regs, lab_map):
 
 def jmp(args, stack, regs, lab_map):
     (o0,) = args
-    if not _is_label(o0): bail("JMP: type error: %s" % args)
+    o0.dispatch(regs, lab_map)
 
-    regs[0] = _label_target(lab_map, _val(o0))
-
-# XXX Tomorrow
+# Jump to o0 if o1 = o2
 def je(args, stack, regs, lab_map):
     (o0, o1, o2) = args
 
-    if not _is_label(o0): bail("JE: type error: %s" % args)
-    if (not _is_reg(o1)) and (not _is_const(o1)): bail("JE: type error: %s" % args)
-    if (not _is_reg(o2)) and (not _is_const(o2)): bail("JE: type error: %s" % args)
+    v1 = o1.evaluate(regs)
+    v2 = o2.evaluate(regs)
 
-    # Slipped a lambda in to see what pypy makes of it...
-    # XXX inline body of lambda
-    cval = lambda x: _val(x) if _is_const(x) else regs[_val(x)]
-    vals = [ cval(x) for x in [o1, o2] ]
-
-    if vals[0] == vals[1]:
-        # jump is taken
-        regs[0] = _label_target(lab_map, _val(o0))
+    if v1 == v2: # jump is taken
+        o0.dispatch(regs, lab_map)
     else:
         _advance_pc(regs)
 
