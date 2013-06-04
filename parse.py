@@ -1,6 +1,7 @@
 import sys, string, re
 import opcodes
-from util import bail, REG_NAMES
+from util import bail
+from program import Instr, ConstOperand, LabelOperand, RegOperand, Program, REG_NAMES
 
 # Opcode Table
 # str -> [F', Z], where [F', Z] is an opcode handler fn and the # of operands
@@ -21,58 +22,6 @@ OPTAB = {
     "CALL" : (opcodes.call, 1),
     "RET" : (opcodes.ret, 0),
 }
-
-# -- Instructions
-class Instr:
-    def __init__(self, f, opers):
-        self.handler = f
-        self.operands = opers
-
-    def execute(self, stack, regs, lab_map):
-        self.handler(self.operands, stack, regs, lab_map)
-
-    def __str__(self):
-        arg_str = ", ".join([ str(x) for x in self.operands ])
-        return (self.handler.func_name + " " + arg_str)
-
-# -- Operands
-class Operand(object):
-    def set(self, regs, v):
-        raise TypeError("Cannot set %s to a %s" % (self, v))
-
-class RegOperand(Operand):
-    def __init__(self, v):
-        self.register = v
-
-    def __str__(self): return "reg(%s)" % self.register
-
-    def evaluate(self, regs): return regs[self.register]
-
-    def set(self, regs, v):
-        regs[self.register] = v
-
-class LabelOperand(Operand):
-    def __init__(self, v):
-        self.label = v
-
-    def __str__(self): return "label(%s)" % self.label
-
-    def dispatch(self, regs, lab_map):
-        # XXX resolve prior to runtime
-        try:
-            addr = lab_map[self.label]
-        except KeyError:
-            raise ValueError("unresolved label")
-
-        regs[0] = addr # set pc
-
-class ConstOperand(Operand):
-    def __init__(self, v):
-        self.value = v
-
-    def __str__(self): return "const(%s)" % self.value
-
-    def evaluate(self, regs): return self.value # regs unused
 
 # returns a tuple (x, v) where x \in {'r', 'c', 'l'} for reg/const/label
 # v is then either a numeric constant, a register number or a label name
@@ -169,4 +118,4 @@ def parse(src):
 
         prog.append(parse_instr(line))
 
-    return (prog, labmap)
+    return Program(prog[:], labmap)

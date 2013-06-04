@@ -1,8 +1,5 @@
 import os
 
-NUM_REGS = 8
-REG_NAMES = [ "R%d" % x for x in range(NUM_REGS) ]
-
 def bail(x):
     os.write(2, "error: %s\n" % x)
     raise Exception()

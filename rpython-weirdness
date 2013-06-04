@@ -30,6 +30,18 @@ Make the english errors more obvious.
 
 Fix warnings in the GC
 
+better error message:
+ MissingRTypeOperation: unimplemented operation: 'getitem' on (<InstanceRepr for program.Program>, <StringRepr * GcStruct rpy_string { hash, chars }>)
+
+
+E           Blocked block -- operation cannot succeed
+E           
+E            v0 = getattr(program_0, ('labels'))
+
+Making a copy of a list will turn a resizable list into an fixed-size list (and vica versa)
+
+Mispelt _immutable_fields will not complain.
+
 JIT
 ---
 
@@ -38,3 +50,6 @@ Test harness is obscure
 Couldn't pass a list of strings to the meta_interp
 
 Explicitly enumerate live variables in the merge point
+
+
+

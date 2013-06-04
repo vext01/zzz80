@@ -12,10 +12,10 @@ def _stk_pop(stack):
         bail("stack underflow")
 
 # --- Opcode Handlers
-def nop(operands, stack, regs, lab_map):
+def nop(operands, stack, regs, program):
     _advance_pc(regs)
 
-def mov(args, stack, regs, lab_map):
+def mov(args, stack, regs, program):
     (o0, o1) = args
 
     regno = o0.evaluate(regs)
@@ -24,50 +24,50 @@ def mov(args, stack, regs, lab_map):
 
     _advance_pc(regs)
 
-def add(args, stack, regs, lab_map):
+def add(args, stack, regs, program):
     (o0, o1) = args
     o0.set(regs, o0.evaluate(regs) + o1.evaluate(regs))
     _advance_pc(regs)
 
-def sub(args, stack, regs, lab_map):
+def sub(args, stack, regs, program):
     (o0, o1) = args
     o0.set(regs, o0.evaluate(regs) - o1.evaluate(regs))
     _advance_pc(regs)
 
-def push(args, stack, regs, lab_map):
+def push(args, stack, regs, program):
     (o0,) = args
     stack.append(o0.evaluate(regs))
     _advance_pc(regs)
 
-def pop(args, stack, regs, lab_map):
+def pop(args, stack, regs, program):
     (o0,) = args
     o0.set(regs, _stk_pop(stack))
     _advance_pc(regs)
 
-def jmp(args, stack, regs, lab_map):
+def jmp(args, stack, regs, program):
     (o0,) = args
-    o0.dispatch(regs, lab_map)
+    o0.dispatch(regs, program)
 
 # Jump to o0 if o1 = o2
-def je(args, stack, regs, lab_map):
+def je(args, stack, regs, program):
     (o0, o1, o2) = args
 
     v1 = o1.evaluate(regs)
     v2 = o2.evaluate(regs)
 
     if v1 == v2: # jump is taken
-        o0.dispatch(regs, lab_map)
+        o0.dispatch(regs, program)
     else:
         _advance_pc(regs)
 
-def halt(args, stack, regs, lab_map): regs[0] = sys.maxint
+def halt(args, stack, regs, program): regs[0] = sys.maxint
 
-def pt(args, stack, regs, lab_map):
+def pt(args, stack, regs, program):
     (o0,) = args
     print(o0.evaluate(regs))
     _advance_pc(regs)
 
-def pick(args, stack, regs, lab_map):
+def pick(args, stack, regs, program):
     (o0, o1) = args
     #if not _is_reg(o0) or not _is_const(o1): bail("PICK: type error: %s" % args)
 
@@ -79,19 +79,19 @@ def pick(args, stack, regs, lab_map):
     _advance_pc(regs)
 
 # discards top of stack
-def drop(args, stack, regs, lab_map):
+def drop(args, stack, regs, program):
     _stk_pop(stack)
     _advance_pc(regs)
 
-def call(args, stack, regs, lab_map):
+def call(args, stack, regs, program):
     (o0,) = args
     stack.append(regs[0] + 1) # push return addr
-    o0.dispatch(regs, lab_map)
+    o0.dispatch(regs, program)
 
-def ret(args, stack, regs, lab_map):
+def ret(args, stack, regs, program):
     regs[0] = _stk_pop(stack)
 
 # for debugging purposes - prints the state of the interpreter
-def dump(args, stack, regs, lab_map):
+def dump(args, stack, regs, program):
     print_vm_state(regs, stack)
     _advance_pc(regs)

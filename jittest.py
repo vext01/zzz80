@@ -9,12 +9,11 @@ rpython.conftest.option = option
 
 from rpython.jit.metainterp.test.test_ajit import LLJitMixin
 from target_zzz80 import SRC
-from zzz80 import interp_loop
 from parse import parse
 
 def main(ct):
-    stmts, lbls = parse(SRC)
-    regs = interp_loop(stmts, lbls, [ct])
+    pgm = parse(SRC)
+    pgm.run([ct])
 
 class TestJit(LLJitMixin):
     def test_zzz80(self):
