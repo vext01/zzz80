@@ -109,13 +109,10 @@ def drop(args, stack, regs, lab_map):
     _stk_pop(stack)
     _advance_pc(regs)
 
-# XXX tomorrow
 def call(args, stack, regs, lab_map):
     (o0,) = args
-    if not _is_label(o0): bail("CALL: type error: %s" % args)
-
     stack.append(regs[0] + 1) # push return addr
-    regs[0] = _label_target(lab_map, _val(o0))
+    o0.dispatch(regs, lab_map)
 
 def ret(args, stack, regs, lab_map):
     regs[0] = _stk_pop(stack)

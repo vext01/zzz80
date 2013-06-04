@@ -60,6 +60,15 @@ class LabelOperand(Operand):
 
     def __str__(self): return "label(%s)" % self.label
 
+    def dispatch(self, regs, lab_map):
+        # XXX resolve prior to runtime
+        try:
+            addr = lab_map[self.label]
+        except KeyError:
+            raise ValueError("unresolved label")
+
+        regs[0] = addr # set pc
+
 class ConstOperand(Operand):
     def __init__(self, v):
         self.value = v
