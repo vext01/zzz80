@@ -16,20 +16,7 @@ def interp_loop(prog, lab_map, stack):
         if regs[0] >= len(prog): break # end program
         instr = prog[regs[0]]
     
-        #print(instr)
-        #sys.exit(1)
-
-        #handler = instr[0]
-        #operands = instr[1:]
         instr.execute(stack, regs, lab_map)
-
-        # dispatch the instr
-        #handler(operands, stack, regs, lab_map)
-
-        # debug
-        #sys.stderr.write(str(instr) + "\n")
-        #print_vm_state(regs, stack)
-        #sys.stderr.write("\n\n")
 
 if __name__ == "__main__":
 
