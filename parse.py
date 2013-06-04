@@ -117,6 +117,9 @@ def suck_in(fn):
     with open(fn, "r") as f_hndl:
         src = f_hndl.read()
 
+    return parse(src)
+
+def parse(src):
     lines = src.split("\n")
     
     # strip cruft
