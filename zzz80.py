@@ -32,11 +32,16 @@ def interp_loop(prog, lab_map, stack):
         #sys.stderr.write("\n\n")
 
 if __name__ == "__main__":
-    (program, label_map) = suck_in()
+
+    if len(sys.argv) < 2:
+        print("usage: zzz80.py <infile>")
+        sys.exit(1)
+
+    (program, label_map) = suck_in(sys.argv[1])
 
     # command line args start on the stack
     try:
-        stack = [ int(x) for x in sys.argv[1:] ]
+        stack = [ int(x) for x in sys.argv[2:] ]
     except ValueError:
         bail("bad argv")
 

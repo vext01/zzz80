@@ -109,12 +109,14 @@ def parse_instr(s):
 
     return Instr(f, args)
 
-def suck_in():
+def suck_in(fn):
     """ Reads in the program from stdin and returns a map:
     Z -> str (instruction address to instr strings)
     """
 
-    src = sys.stdin.read()
+    with open(fn, "r") as f_hndl:
+        src = f_hndl.read()
+
     lines = src.split("\n")
     
     # strip cruft
