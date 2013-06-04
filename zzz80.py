@@ -18,6 +18,8 @@ def interp_loop(prog, lab_map, stack):
     
         instr.execute(stack, regs, lab_map)
 
+    return regs
+
 if __name__ == "__main__":
 
     if len(sys.argv) < 2:
