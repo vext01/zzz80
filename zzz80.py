@@ -3,20 +3,34 @@
 import os, sys
 from util import bail, print_vm_state, NUM_REGS, REG_NAMES
 from parse import suck_in
+from rpython.rlib import jit
+
+# each arg is one green var
+def get_printable_location(pc):
+    return str(pc)
+
+jd = jit.JitDriver(
+        greens = [ "pc" ],
+        reds = ["regs", "prog", "lab_map", "stack"],
+        get_printable_location = get_printable_location,
+        )
 
 def interp_loop(prog, lab_map, stack):
 
     # setup interpreter state
     regs = [0 for x in range(NUM_REGS)] # r0 is the PC
+    pc = regs[0]
 
     # main interpreter loop
     while True:
+        jd.jit_merge_point(pc=pc, regs=regs, prog=prog, lab_map=lab_map, stack=stack)
 
         # fetch the instr
-        if regs[0] >= len(prog): break # end program
-        instr = prog[regs[0]]
+        if pc >= len(prog): break # end program
+        instr = prog[pc]
     
         instr.execute(stack, regs, lab_map)
+        pc = regs[0]
 
     return regs
 

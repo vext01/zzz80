@@ -29,3 +29,12 @@ Why *args in the target function??
 Make the english errors more obvious.
 
 Fix warnings in the GC
+
+JIT
+---
+
+Test harness is obscure
+
+Couldn't pass a list of strings to the meta_interp
+
+Explicitly enumerate live variables in the merge point
