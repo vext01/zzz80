@@ -27,9 +27,6 @@ class Instr:
     def __init__(self, f, opers):
         self.handler = f
         self.operands = opers
-        #operand1 = o1
-        #operand2 = o2
-        #operand3 = o3
 
     def execute(self, stack, regs, lab_map):
         self.handler(self.operands, stack, regs, lab_map)
@@ -79,7 +76,6 @@ class ConstOperand(Operand):
 
 # returns a tuple (x, v) where x \in {'r', 'c', 'l'} for reg/const/label
 # v is then either a numeric constant, a register number or a label name
-# XXX Use objects for instrs and operands
 def parse_operand(x):
 
     # is it a register name?
@@ -92,13 +88,7 @@ def parse_operand(x):
     except ValueError:
         pass
 
-    # a label name?
-    # XXX regex needs to go
-    #if re.match('^[\w-]+$', x) is not None:
-    #    return ('l', x)
     return LabelOperand(x)
-
-    #bail("Bad operand: %s" % x)
 
 def parse_instr(s):
     """ Parses a simple OP [ARG1 [, ... ,ARGN]] """
@@ -115,12 +105,9 @@ def parse_instr(s):
     num_args = len(args_raw)
     if len(args_raw) != nargs: bail("wrong arg count: %s" % opcode)
 
-    args = [ parse_operand(x) for x in args_raw ] #+ [ None for x in range(3 - num_args) ]
-    #for i in range(3 - len(args_raw)):
-    #    args.extend([None])
+    args = [ parse_operand(x) for x in args_raw ]
 
     return Instr(f, args)
-    #return [f] + args
 
 def suck_in():
     """ Reads in the program from stdin and returns a map:
@@ -163,9 +150,5 @@ def suck_in():
             continue
 
         prog.append(parse_instr(line))
-
-    #for i in prog:
-    #    print(i)
-    #sys.exit(1)
 
     return (prog, labmap)

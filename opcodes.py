@@ -2,25 +2,8 @@ import sys
 from util import bail, print_vm_state
 
 # --- Utility Funcs
-def _is_reg(x):
-    return True if x[0] == 'r' else False
-
-def _is_const(x):
-    return True if x[0] == 'c' else False
-
-def _is_label(x):
-    return True if x[0] == 'l' else False
-
 def _advance_pc(regs):
     regs[0] += 1
-
-def _val(x): return x[1]
-
-def _label_target(lab_map, lbl):
-    try:
-        return lab_map[lbl]
-    except KeyError:
-        bail("Bad label: %s" % lbl)
 
 def _stk_pop(stack):
     try:
