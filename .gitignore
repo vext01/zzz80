@@ -1,2 +1,4 @@
+*.core
 *.pyc
 *.swp
+target_zzz80-c
