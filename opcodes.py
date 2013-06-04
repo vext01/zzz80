@@ -60,7 +60,7 @@ def je(args, stack, regs, lab_map):
     else:
         _advance_pc(regs)
 
-def halt(args, stack, regs, lab_map): sys.exit(0)
+def halt(args, stack, regs, lab_map): regs[0] = sys.maxint
 
 def pt(args, stack, regs, lab_map):
     (o0,) = args

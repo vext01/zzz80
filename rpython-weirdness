@@ -5,3 +5,27 @@ This is a list of language features which many not be used in RPython:
   * Variable length tuples
   * Regex
   * No sys.std* nonexitstent 
+  * string.index
+  * dict()
+  * strip with 0 args
+  * dict.get with a single arg
+  * strip can only accept a char as an operand, whereas python accepts a string
+
+What does this mean:
+Traceback (most recent call last):
+  File "app_main.py", line 72, in run_toplevel
+  File "/home/edd/eck2/bin/rpython", line 20, in <module>
+    main()
+  File "/home/edd/source/pypy/rpython/translator/goal/translate.py", line 222, in main
+    targetspec_dic, translateconfig, config, args = parse_options_and_load_target()
+  File "/home/edd/source/pypy/rpython/translator/goal/translate.py", line 158, in parse_options_and_load_target
+    targetspec_dic = load_target(targetspec)
+  File "/home/edd/source/pypy/rpython/translator/goal/translate.py", line 102, in load_target
+    raise Exception("file %r is not a valid targetxxx.py." % (targetspec,))
+Exception: file 'target_zzz80.py' is not a valid targetxxx.py.
+
+Why *args in the target function??
+
+Make the english errors more obvious.
+
+Fix warnings in the GC

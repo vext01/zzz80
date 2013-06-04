@@ -5,21 +5,21 @@ from util import bail, REG_NAMES
 # Opcode Table
 # str -> [F', Z], where [F', Z] is an opcode handler fn and the # of operands
 OPTAB = {
-    "NOP" : [opcodes.nop, 0],
-    "MOV" : [opcodes.mov, 2],
-    "DUMP" : [opcodes.dump, 0],
-    "ADD" : [opcodes.add, 2],
-    "SUB" : [opcodes.sub, 2],
-    "PUSH": [opcodes.push, 1],
-    "POP": [opcodes.pop, 1],
-    "JMP" : [opcodes.jmp, 1],
-    "JE" : [opcodes.je, 3],
-    "HALT" : [opcodes.halt, 0],
-    "PT" : [opcodes.pt, 1],
-    "PICK" : [opcodes.pick, 2],
-    "DROP" : [opcodes.drop, 0],
-    "CALL" : [opcodes.call, 1],
-    "RET" : [opcodes.ret, 0],
+    "NOP" : (opcodes.nop, 0),
+    "MOV" : (opcodes.mov, 2),
+    "DUMP" : (opcodes.dump, 0),
+    "ADD" : (opcodes.add, 2),
+    "SUB" : (opcodes.sub, 2),
+    "PUSH": (opcodes.push, 1),
+    "POP": (opcodes.pop, 1),
+    "JMP" : (opcodes.jmp, 1),
+    "JE" : (opcodes.je, 3),
+    "HALT" : (opcodes.halt, 0),
+    "PT" : (opcodes.pt, 1),
+    "PICK" : (opcodes.pick, 2),
+    "DROP" : (opcodes.drop, 0),
+    "CALL" : (opcodes.call, 1),
+    "RET" : (opcodes.ret, 0),
 }
 
 # -- Instructions
@@ -97,9 +97,8 @@ def parse_instr(s):
     opcode = words[0]
     args_raw = string.join(words[1:], "").split(",") if len(words) > 1 else []
 
-    optab_rec = OPTAB.get(opcode)
-    if optab_rec is None: bail("unknown opcode: %s" % opcode)
-    (f, nargs) = optab_rec
+    f, nargs = OPTAB.get(opcode, (None, -1))
+    if nargs == -1: bail("unknown opcode: %s" % opcode)
 
     # check number of args is good
     num_args = len(args_raw)
@@ -119,6 +118,18 @@ def suck_in(fn):
 
     return parse(src)
 
+def _strip(s):
+
+    start, stop = 0, 0
+    
+    for start, ch in enumerate(s):
+        if not ch.isspace(): break
+
+    for stop in range(len(s) - 1, -1, -1):
+        if not s[stop].isspace(): break
+
+    return s[start:stop + 1]
+
 def parse(src):
     lines = src.split("\n")
     
@@ -128,15 +139,17 @@ def parse(src):
         l = l.upper()
 
         # strip comments
-        try:
-            com_idx = l.index('#')
-        except ValueError:
+        com_idx = l.find('#')
+
+        if com_idx < 0:
             com_idx = len(l)
+
+        #assert(com_idx >= 0)
 
         l = l[0:com_idx]
 
         # strip whitespace
-        l = l.strip()
+        l = _strip(l)
 
         # no blank lines
         if len(l) == 0: continue
@@ -144,7 +157,7 @@ def parse(src):
         lines_p.append(l)
 
     prog = []
-    labmap = dict() # str -> Z for labels.
+    labmap = {} # str -> Z for labels.
 
     # generate a .text-a-like mapping
     for line in lines_p:
