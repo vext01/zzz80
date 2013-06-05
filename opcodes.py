@@ -83,5 +83,5 @@ def ret(args, program):
 
 # for debugging purposes - prints the state of the interpreter
 def dump(args, program):
-    program.dump_state()
+    program.dump_vm_state()
     program.advance_pc()

@@ -56,5 +56,36 @@ Explicitly enumerate live variables in the merge point
 
 Better debugging information in the trace log, atleast function name would useful.
 
+Undefined method:
+[translation:ERROR] Error:
+[translation:ERROR]  Traceback (most recent call last):
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/translator/goal/translate.py", line 321, in main
+[translation:ERROR]     drv.proceed(goals)
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/translator/driver.py", line 733, in proceed
+[translation:ERROR]     return self._execute(goals, task_skip = self._maybe_skip())
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/translator/tool/taskengine.py", line 114, in _execute
+[translation:ERROR]     res = self._do(goal, taskcallable, *args, **kwds)
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/translator/driver.py", line 284, in _do
+[translation:ERROR]     res = func()
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/translator/driver.py", line 321, in task_annotate
+[translation:ERROR]     s = annotator.build_types(self.entry_point, self.inputtypes)
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/annotator/annrpython.py", line 93, in build_types
+[translation:ERROR]     return self.build_graph_types(flowgraph, inputcells, complete_now=complete_now)
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/annotator/annrpython.py", line 149, in build_graph_types
+[translation:ERROR]     self.complete()
+[translation:ERROR]    File "/home/edd/source/pypy/rpython/annotator/annrpython.py", line 225, in complete
+[translation:ERROR]     raise AnnotatorError(text)
+[translation:ERROR]  AnnotatorError: -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+[translation:ERROR] Blocked block -- operation cannot succeed
+[translation:ERROR]
+[translation:ERROR]  v0 = getattr(program_0, ('dump_state'))
+[translation:ERROR] In <FunctionGraph of (opcodes:85)dump at 0x229aededf68>:
+[translation:ERROR] Happened at file opcodes.py line 86
+[translation:ERROR]
+[translation:ERROR] ==>     program.dump_state()
+[translation:ERROR]         program.advance_pc()
+[translation:ERROR]
+[translation:ERROR] Known variable annotations:
+[translation:ERROR]  program_0 = SomeInstance(can_be_None=False, classdef=program.Program)
 
 

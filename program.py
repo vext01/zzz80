@@ -1,4 +1,5 @@
 from rpython.rlib import jit
+from util import bail
 
 NUM_REGS = 8
 REG_NAMES = [ "R%d" % x for x in range(NUM_REGS) ]
@@ -115,5 +116,5 @@ class Program(object):
         return self.regs
 
     def dump_vm_state(self):
-        print("stack: " + self.stack)
-        print("regs: " + self.regs)
+        print("stack: " + str(self.stack))
+        print("regs: " + str(self.regs))

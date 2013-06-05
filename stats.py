@@ -1,7 +1,7 @@
 import time, os, sys
 #import matplotlib.pyplot as plt
 
-NUM_TESTS = 31
+NUM_TESTS = 35
 
 def time_exec(cmd):
     t0 = time.time()
