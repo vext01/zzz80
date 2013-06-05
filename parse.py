@@ -1,7 +1,8 @@
 import sys, string, re
 import opcodes
 from util import bail
-from program import Instr, ConstOperand, LabelOperand, RegOperand, Program, REG_NAMES
+from vmstate import Instr, ConstOperand, LabelOperand
+from vmstate import RegOperand, VMState, REG_NAMES
 
 # Opcode Table
 # str -> [F', Z], where [F', Z] is an opcode handler fn and the # of operands
@@ -120,4 +121,4 @@ def parse(src):
 
         prog.append(parse_instr(line))
 
-    return Program(prog[:], labmap)
+    return VMState(prog[:], labmap)

@@ -63,7 +63,7 @@ class ConstOperand(Operand):
     def __str__(self): return "const(%s)" % self.value
     def evaluate(self, program): return self.value
 
-class Program(object):
+class VMState(object):
     _immutable_fields_ = ["instrs[*]", "label_map"]
 
     def __init__(self, instrs, labels):
@@ -101,8 +101,6 @@ class Program(object):
 
         # setup interpreter state
         # main interpreter loop
-        # [translation:ERROR]  JitHintError: ("<bound method JitDriver.jit_merge_point of <rpython.rlib.jit.JitDriver object at 0x0000188468f2ede8>> expects the following keyword arguments: ['s_pc', 's_regs', 's_self', 's_stack']", <
-        # 
         while True:
             jd.jit_merge_point(pc=pc, self=self)
 
