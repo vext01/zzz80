@@ -2,7 +2,7 @@ import sys
 from util import bail
 
 # --- Opcode Handlers
-def nop(operands, vm_state):
+def nop(args, vm_state):
     vm_state.advance_pc()
 
 def mov(args, vm_state):
@@ -81,7 +81,7 @@ def call(args, vm_state):
 def ret(args, vm_state):
     vm_state.set_reg(0, vm_state.pop())
 
-# for debugging purposes - prints the state of the interpreter
+# for debugging purposes - prints the state of the vm
 def dump(args, vm_state):
     vm_state.dump_vm_state()
     vm_state.advance_pc()
