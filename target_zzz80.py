@@ -13,7 +13,9 @@ def main(argv):
     hndl = open_file_as_stream(argv[1])
     prog = parse.parse(hndl.readall())
     hndl.close()
-    prog.run([int(x) for x in argv[2:]])
+
+    args = [ int(x) for x in argv[2:]]
+    prog.run(args)
 
     return 0
 

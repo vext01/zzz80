@@ -1,97 +1,87 @@
 import sys
-from util import bail, print_vm_state
-
-# --- Utility Funcs
-def _advance_pc(regs):
-    regs[0] += 1
-
-def _stk_pop(stack):
-    try:
-        return stack.pop()
-    except IndexError:
-        bail("stack underflow")
+from util import bail
 
 # --- Opcode Handlers
-def nop(operands, stack, regs, program):
-    _advance_pc(regs)
+def nop(operands, program):
+    program.advance_pc()
 
-def mov(args, stack, regs, program):
+def mov(args, program):
     (o0, o1) = args
 
-    regno = o0.evaluate(regs)
-    rhs = o1.evaluate(regs)
-    o0.set(regs, rhs)
+    regno = o0.evaluate(program)
+    rhs = o1.evaluate(program)
+    o0.set(program, rhs)
 
-    _advance_pc(regs)
+    program.advance_pc()
 
-def add(args, stack, regs, program):
+def add(args, program):
     (o0, o1) = args
-    o0.set(regs, o0.evaluate(regs) + o1.evaluate(regs))
-    _advance_pc(regs)
+    o0.set(program, o0.evaluate(program) + o1.evaluate(program))
+    program.advance_pc()
 
-def sub(args, stack, regs, program):
+def sub(args, program):
     (o0, o1) = args
-    o0.set(regs, o0.evaluate(regs) - o1.evaluate(regs))
-    _advance_pc(regs)
+    o0.set(program, o0.evaluate(program) - o1.evaluate(program))
+    program.advance_pc()
 
-def push(args, stack, regs, program):
+def push(args, program):
     (o0,) = args
-    stack.append(o0.evaluate(regs))
-    _advance_pc(regs)
+    program.push(o0.evaluate(program))
+    program.advance_pc()
 
-def pop(args, stack, regs, program):
+def pop(args, program):
     (o0,) = args
-    o0.set(regs, _stk_pop(stack))
-    _advance_pc(regs)
+    o0.set(program, program.pop())
+    program.advance_pc()
 
-def jmp(args, stack, regs, program):
+def jmp(args, program):
     (o0,) = args
-    o0.dispatch(regs, program)
+    o0.dispatch(program)
 
 # Jump to o0 if o1 = o2
-def je(args, stack, regs, program):
+def je(args, program):
     (o0, o1, o2) = args
 
-    v1 = o1.evaluate(regs)
-    v2 = o2.evaluate(regs)
+    v1 = o1.evaluate(program)
+    v2 = o2.evaluate(program)
 
     if v1 == v2: # jump is taken
-        o0.dispatch(regs, program)
+        o0.dispatch(program)
     else:
-        _advance_pc(regs)
+        program.advance_pc()
 
-def halt(args, stack, regs, program): regs[0] = sys.maxint
+def halt(args, program): program.set_pc(sys.maxint) # XXX hacky
 
-def pt(args, stack, regs, program):
+def pt(args, program):
     (o0,) = args
-    print(o0.evaluate(regs))
-    _advance_pc(regs)
+    print(o0.evaluate(program))
+    program.advance_pc()
 
-def pick(args, stack, regs, program):
+def pick(args, program):
     (o0, o1) = args
-    #if not _is_reg(o0) or not _is_const(o1): bail("PICK: type error: %s" % args)
+    stack = program.get_stack()
 
     try:
-        o0.set(regs, stack[-(o1.evaluate(regs) + 1)])
+        o0.set(program, stack[-(o1.evaluate(program) + 1)])
     except IndexError:
         bail("PICK: stack underflow")
 
-    _advance_pc(regs)
+    program.advance_pc()
 
 # discards top of stack
-def drop(args, stack, regs, program):
-    _stk_pop(stack)
-    _advance_pc(regs)
+def drop(args, program):
+    program.pop() # ignore ret
+    program.advance_pc()
 
-def call(args, stack, regs, program):
+def call(args, program):
     (o0,) = args
-    stack.append(regs[0] + 1) # push return addr
-    o0.dispatch(regs, program)
+    program.push(program.get_pc() + 1) # push return addr
+    o0.dispatch(program)
 
-def ret(args, stack, regs, program):
-    regs[0] = _stk_pop(stack)
+def ret(args, program):
+    program.set_reg(0, program.pop())
 
 # for debugging purposes - prints the state of the interpreter
-def dump(args, stack, regs, program):
-    print_vm_state(regs, stack)
-    _advance_pc(regs)
+def dump(args, program):
+    program.dump_state()
+    program.advance_pc()
