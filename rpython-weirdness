@@ -24,7 +24,10 @@ Traceback (most recent call last):
     raise Exception("file %r is not a valid targetxxx.py." % (targetspec,))
 Exception: file 'target_zzz80.py' is not a valid targetxxx.py.
 
-Why *args in the target function??
+Why *args in the target function?? Should complain if the target cannot
+accept cmd line options, but one is passed.
+
+JITPolicy is annoying
 
 Make the english errors more obvious.
 

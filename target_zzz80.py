@@ -16,13 +16,17 @@ end:
 
 def main(argv):
 
-    stmts, lbls = parse.parse(SRC)
-    regs = zzz80.interp_loop(stmts, lbls, [int(argv[1])])
+    prog = parse.parse(SRC)
+    prog.run([int(argv[1])])
 
     return 0
 
 def target(*args):
     return main, None
+
+def jitpolicy(driver):
+    from rpython.jit.codewriter.policy import JitPolicy
+    return JitPolicy()
 
 if __name__ == "__main__":
     main(sys.argv)
