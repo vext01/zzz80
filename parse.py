@@ -47,7 +47,7 @@ def parse_instr(s):
     args_raw = string.join(words[1:], "").split(",") if len(words) > 1 else []
 
     f, nargs = OPTAB.get(opcode, (None, -1))
-    if nargs == -1: bail("unknown opcode: %s" % opcode)
+    if nargs == -1: bail("unknown opcode: '%s'" % opcode)
 
     # check number of args is good
     num_args = len(args_raw)
@@ -73,6 +73,8 @@ def _strip(s):
     
     for start, ch in enumerate(s):
         if not ch.isspace(): break
+    else:
+        return ""
 
     for stop in range(len(s) - 1, -1, -1):
         if not s[stop].isspace(): break
