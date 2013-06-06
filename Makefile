@@ -13,7 +13,7 @@ jit:
 	${RPYTHON} --output bin/jit -Ojit target_zzz80.py
 
 test:
-	py.test
+	${PYTEST}
 
 tracegui:
-	${PYTEST} jittest.py
+	${PYTEST} jittest.py -s --pdb

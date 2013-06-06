@@ -59,12 +59,7 @@ def pt(args, vm_state):
 
 def pick(args, vm_state):
     (o0, o1) = args
-    stack = vm_state.get_stack()
-
-    try:
-        o0.set(vm_state, stack[-(o1.evaluate(vm_state) + 1)])
-    except IndexError:
-        bail("PICK: stack underflow")
+    o0.set(vm_state, vm_state.pick(o1.evaluate(vm_state)))
 
     vm_state.advance_pc()
 

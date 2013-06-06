@@ -88,4 +88,4 @@ Undefined method:
 [translation:ERROR] Known variable annotations:
 [translation:ERROR]  program_0 = SomeInstance(can_be_None=False, classdef=program.Program)
 
-
+document how jit argument parsing works, changing jit parameters

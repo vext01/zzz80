@@ -1,8 +1,9 @@
-from rpython.rlib import jit
+from rpython.rlib import jit, debug
 from util import bail
 
 NUM_REGS = 8
 REG_NAMES = [ "R%d" % x for x in range(NUM_REGS) ]
+STACKSIZE = 1024
 
 # each arg is one green var
 def get_printable_location(pc, pgm):
@@ -72,32 +73,50 @@ class VMState(object):
         self.stack = None
         self.regs = [0 for x in range(NUM_REGS)] # r0 is the PC
 
-    @jit.elidable
-    def lookup_label(self, key): return self.label_map.get(key, -1)
+    def init_stack(self, initstack):
+        self.stack = initstack + [0] * (STACKSIZE - len(initstack))
+        debug.make_sure_not_resized(self.stack)
+        self.sp = len(initstack)
 
     def pop(self):
-        try:
-            return self.stack.pop()
-        except ValueError:
+        if self.sp == 0:
             bail("stack underflow")
+        self.sp -= 1
+        result = self.stack[self.sp]
+        #self.stack[self.sp] = 0
+        return result
 
-    def push(self, x): self.stack.append(x)
+    def push(self, x):
+        if self.sp >= STACKSIZE:
+            bail("stack overflow")
+        self.stack[self.sp] = x
+        self.sp += 1
+
+    def pick(self, x):
+        index = self.sp - x - 1
+        if not (0 <= index < self.sp):
+            bail("stack underflow")
+        return self.stack[index]
+
     def advance_pc(self): self.regs[0] += 1
     def set_pc(self, x): self.regs[0] = x
     def get_pc(self): return self.regs[0]
     def set_reg(self, r, v): self.regs[r] = v
     def get_reg(self, x): return self.regs[x]
-    def get_stack(self): return self.stack
+    def get_stack(self): return self.stack[:self.sp]
 
     def get_label(self, x):
-        try:
-            return self.label_map[x]
-        except KeyError:
+        label = self._get_label(x)
+        if label == -1:
             bail("undefined label: %s" % x)
+        return label
 
-    def run(self, stack):
+    @jit.elidable
+    def _get_label(self, key): return self.label_map.get(key, -1)
+
+    def run(self, initstack):
+        self.init_stack(initstack)
         pc = self.regs[0]
-        self.stack = stack
 
         # setup interpreter state
         # main interpreter loop

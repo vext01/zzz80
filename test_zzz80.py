@@ -1,4 +1,4 @@
-import zzz80, parse
+import parse, vmstate
 
 def test_mov():
     p = "MOV r1, 666"
@@ -20,3 +20,17 @@ def test_tab_comment_parsing():
     prog = parse.parse(line)
 
     assert prog.instrs == []
+
+def test_stack():
+    vm = vmstate.VMState(None, None)
+    vm.init_stack([6])
+    vm.push(4)
+    assert vm.sp == 2
+    assert vm.pick(0) == 4
+    assert vm.pick(1) == 6
+
+    x = vm.pop()
+    assert x == 4
+    x = vm.pop()
+    assert x == 6
+
