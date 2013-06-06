@@ -1,4 +1,4 @@
-from rpython.rlib import jit, debug
+from rpython.rlib import jit, debug, unroll
 from util import bail
 
 NUM_REGS = 8
@@ -64,6 +64,9 @@ class ConstOperand(Operand):
     def __str__(self): return "const(%s)" % self.value
     def evaluate(self, program): return self.value
 
+
+unrolling_reg_range = unroll.unrolling_iterable(range(NUM_REGS))
+
 class VMState(object):
     _immutable_fields_ = ["instrs[*]", "label_map"]
 
@@ -71,7 +74,13 @@ class VMState(object):
         self.instrs = instrs
         self.label_map = labels
         self.stack = None
-        self.regs = [0 for x in range(NUM_REGS)] # r0 is the PC
+        #self.regs = [0 for x in range(NUM_REGS)] # r0 is the PC
+
+        # because the register accesses are constant for a give pc value,
+        # if the registers are individual fields, then the tracer can
+        # optimise, as fields may not affect each other.
+        for i in unrolling_reg_range:
+            setattr(self, "r%s" % i, 0)
 
     def init_stack(self, initstack):
         self.stack = initstack + [0] * (STACKSIZE - len(initstack))
@@ -98,11 +107,23 @@ class VMState(object):
             bail("stack underflow")
         return self.stack[index]
 
-    def advance_pc(self): self.regs[0] += 1
-    def set_pc(self, x): self.regs[0] = x
-    def get_pc(self): return self.regs[0]
-    def set_reg(self, r, v): self.regs[r] = v
-    def get_reg(self, x): return self.regs[x]
+    def advance_pc(self): self.r0 += 1
+    def set_pc(self, x): self.r0 = x
+    def get_pc(self): return self.r0
+    def set_reg(self, r, v):
+        for i in unrolling_reg_range:
+            if r == i:
+                setattr(self, "r%s" % i, v)
+                break
+        else:
+            bail("unknown register %s" % r)
+
+    def get_reg(self, x):
+        for i in unrolling_reg_range:
+            if x == i:
+                return getattr(self, "r%s" % i)
+        bail("unknown register %s" % x)
+
     def get_stack(self): return self.stack[:self.sp]
 
     def get_label(self, x):
@@ -114,9 +135,18 @@ class VMState(object):
     @jit.elidable
     def _get_label(self, key): return self.label_map.get(key, -1)
 
+    def get_regs(self):
+        rs = []
+        for i in unrolling_reg_range:
+            rs.append(getattr(self, "r%s" % i))
+
+        return rs
+
     def run(self, initstack):
         self.init_stack(initstack)
-        pc = self.regs[0]
+
+        # XXX pc local still needed?
+        pc = self.r0
 
         # setup interpreter state
         # main interpreter loop
@@ -128,10 +158,10 @@ class VMState(object):
             instr = self.instrs[pc]
         
             instr.execute(self)
-            pc = self.regs[0]
+            pc = self.r0
 
-        return self.regs
+        return self.get_regs()
 
     def dump_vm_state(self):
         print("stack: " + str(self.stack))
-        print("regs: " + str(self.regs))
+        print("regs: " + str(self.get_regs()))
