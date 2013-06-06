@@ -124,7 +124,10 @@ class VMState(object):
                 return getattr(self, "r%s" % i)
         bail("unknown register %s" % x)
 
-    def get_stack(self): return self.stack[:self.sp]
+    def get_stack(self):
+        sp = self.sp
+        assert(sp >= 0)
+        return self.stack[:sp]
 
     def get_label(self, x):
         label = self._get_label(x)
@@ -163,5 +166,5 @@ class VMState(object):
         return self.get_regs()
 
     def dump_vm_state(self):
-        print("stack: " + str(self.stack))
+        print("stack: " + str(self.get_stack()))
         print("regs: " + str(self.get_regs()))
