@@ -58,18 +58,7 @@ def parse_instr(s):
 
     return Instr(f, args)
 
-def suck_in(fn):
-    """ Reads in the program from stdin and returns a map:
-    Z -> str (instruction address to instr strings)
-    """
-
-    with open(fn, "r") as f_hndl:
-        src = f_hndl.read()
-
-    return parse(src)
-
 def _strip(s):
-
     start, stop = 0, 0
     
     for start, ch in enumerate(s):

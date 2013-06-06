@@ -1,6 +1,6 @@
 import sys
 import os
-import parse, zzz80
+import parse
 from util import bail
 
 from rpython.rlib.streamio import open_file_as_stream
