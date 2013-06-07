@@ -1,4 +1,13 @@
-# /home/edd/source/pypy/pytest.py jittest.py -s --pdb -s
+# This is the driver for graphical trace examination.
+#
+# It is a little slow, but at least allows you # to examine the traces
+# that are being generated in an intuitive fashion.
+#
+# During testing in this way, execution is paused and a graphical
+# CFG is shown. From here you can zoom in and inspect, search, etc.
+# Press q or esc to continue execution until the next pause.
+# When the pausing occurs is controlled by the option class.
+
 import rpython.conftest
 
 class option:

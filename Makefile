@@ -1,5 +1,8 @@
 RPYTHON=rpython
 PYTEST=/home/edd/source/pypy/pytest.py
+PYPY=pypy
+PYTHON=python2.7
+PYTHONPATH=/home/edd/source/pypy
 
 all:
 	-echo "targets are 'trans', 'jit', 'tracegui', 'world'"
