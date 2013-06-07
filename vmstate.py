@@ -9,15 +9,27 @@ STACKSIZE = 1024
 def get_printable_location(pc, pgm):
     return "%s:%s" % (str(pc), pgm.instrs[pc])
 
+# The union of the red and green vars must include the live variables
+# at the jit merge point.
+#
+# We specialise the interpreter upon the values of the green variables.
+# Red variables, on the other hand, will stay variables in the trace.
 jd = jit.JitDriver(
-        greens = [ "pc", "self" ], # stuff at a jit merge
-        #reds = ["regs", "stack"], # don't try to optimise on these
-        reds = [],
+        greens = [ "pc", "self" ], # specialise.
+        reds = [], # don't specialise
         get_printable_location = get_printable_location,
         )
 
 # -- Instructions
 class Instr:
+    # immutable fields are, obviously, not changing after their definition.
+    # The JIT can avoid superfluous lookups/reads out of constant objects.
+    #
+    # field[*] means that the contents of the list (which is a field) are
+    # themselves constant.
+    #
+    # field?, means that the field is very likely to be immutable. When such
+    # a field changes, an expensive invalidation of asm code occurs.
     _immutable_fields_ = ["handler", "operands[*]"]
 
     def __init__(self, f, opers):
@@ -65,6 +77,8 @@ class ConstOperand(Operand):
     def evaluate(self, program): return self.value
 
 
+# This is a metaprogramming construct used below to unroll loops
+# read on...
 unrolling_reg_range = unroll.unrolling_iterable(range(NUM_REGS))
 
 class VMState(object):
@@ -74,16 +88,23 @@ class VMState(object):
         self.instrs = instrs
         self.label_map = labels
         self.stack = None
-        #self.regs = [0 for x in range(NUM_REGS)] # r0 is the PC
 
-        # because the register accesses are constant for a give pc value,
-        # if the registers are individual fields, then the tracer can
-        # optimise, as fields may not affect each other.
+        # unrolls the loop via metaprogramming.
+        # We resist the temptation to use a list for registers, as
+        # rpython must consider the fact that mutating the list may
+        # affect multiple registers (and other lists of the same type).
+        # If the regsiters are separate
+        # fields, then they are absolutely independent of each other and
+        # of other lists of the same type.
         for i in unrolling_reg_range:
             setattr(self, "r%s" % i, 0)
 
     def init_stack(self, initstack):
+        # The stack is a constant size list. This means that rpython
+        # does not need to check if re-allocation/downsizing should
+        # occur.
         self.stack = initstack + [0] * (STACKSIZE - len(initstack))
+        # The next line is just an assertion of the above comment.
         debug.make_sure_not_resized(self.stack)
         self.sp = len(initstack)
 
@@ -92,7 +113,7 @@ class VMState(object):
             bail("stack underflow")
         self.sp -= 1
         result = self.stack[self.sp]
-        #self.stack[self.sp] = 0
+        #self.stack[self.sp] = 0 # XXX
         return result
 
     def push(self, x):
@@ -125,7 +146,7 @@ class VMState(object):
         bail("unknown register %s" % x)
 
     def get_stack(self):
-        sp = self.sp
+        sp = self.sp # asserting upon a field does not help type inference, use local
         assert(sp >= 0)
         return self.stack[:sp]
 
@@ -135,6 +156,9 @@ class VMState(object):
             bail("undefined label: %s" % x)
         return label
 
+    # An elidable function is one which behaves deterministically. The elidable
+    # hint suggests that a method is elidable, even if it depends upon
+    # object state. The JIT can take advantage of this.
     @jit.elidable
     def _get_label(self, key): return self.label_map.get(key, -1)
 
@@ -148,12 +172,13 @@ class VMState(object):
     def run(self, initstack):
         self.init_stack(initstack)
 
-        # XXX pc local still needed?
-        pc = self.r0
+        pc = self.r0 # green fields may not be fields
 
-        # setup interpreter state
         # main interpreter loop
         while True:
+            # This is the reference point for the JIT to specialise a
+            # trace. For example here, if the pc is the same as a pc
+            # value seen before, then we can assume the same happens as before.
             jd.jit_merge_point(pc=pc, self=self)
 
             # fetch the instr

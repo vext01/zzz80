@@ -2,7 +2,7 @@
 # translation; the so-called 'target'.
 #
 # The function "target" should return a function at which rpython
-# should begins it's analysis.
+# should begins its analysis.
 #
 # A function 'jitpolicy' should return a JitPolicy. The default one
 # is fine in this instance.

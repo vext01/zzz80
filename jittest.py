@@ -1,12 +1,15 @@
 # This is the driver for graphical trace examination.
 #
-# It is a little slow, but at least allows you # to examine the traces
-# that are being generated in an intuitive fashion.
+# It is a little slow, but at least allows you to examine the traces
+# that are being generated in an intuitive fashion and without translating
+# the interpreter (which can take a while). This is a useful tool for
+# seeing whether your jit hints are effective.
 #
 # During testing in this way, execution is paused and a graphical
 # CFG is shown. From here you can zoom in and inspect, search, etc.
 # Press q or esc to continue execution until the next pause.
-# When the pausing occurs is controlled by the option class.
+# When the pausing occurs is controlled by the option class. Pressing '?'
+# in the viewer will give you some documentation.
 
 import rpython.conftest
 
