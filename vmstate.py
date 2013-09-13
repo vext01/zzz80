@@ -7,7 +7,17 @@ STACKSIZE = 1024
 
 # each arg is one green var
 def get_printable_location(pc, pgm):
-    return "%s:%s" % (str(pc), pgm.instrs[pc])
+    # XXX: why is the instruction not stringifid properly?
+    #
+    # In jitviewer we see (for example):
+    #    3: <Instr object at 0xblah>
+    #
+    # Seems like RPython has not used Instr.__str__?!
+    return "%s:%s" % (str(pc), str(pgm.instrs[pc]))
+
+    # make a weird error messages from rpython
+    # return pgm.instrs[pc].handler
+    # return pgm.instrs[pc].handler.func_name
 
 # The union of the red and green vars must include the live variables
 # at the jit merge point.
