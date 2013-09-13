@@ -184,7 +184,7 @@ class VMState(object):
             # fetch the instr
             if pc >= len(self.instrs): break # end program
             instr = self.instrs[pc]
-        
+
             instr.execute(self)
             pc = self.r0
 

@@ -60,7 +60,7 @@ def parse_instr(s):
 
 def _strip(s):
     start, stop = 0, 0
-    
+
     for start, ch in enumerate(s):
         if not ch.isspace(): break
     else:
@@ -73,7 +73,7 @@ def _strip(s):
 
 def parse(src):
     lines = src.split("\n")
-    
+
     # strip cruft
     lines_p = []
     for l in lines:
