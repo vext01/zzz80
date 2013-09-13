@@ -7,17 +7,8 @@ STACKSIZE = 1024
 
 # each arg is one green var
 def get_printable_location(pc, pgm):
-    # XXX: why is the instruction not stringifid properly?
-    #
-    # In jitviewer we see (for example):
-    #    3: <Instr object at 0xblah>
-    #
-    # Seems like RPython has not used Instr.__str__?!
-    return "%s:%s" % (str(pc), str(pgm.instrs[pc]))
-
-    # make a weird error messages from rpython
-    # return pgm.instrs[pc].handler
-    # return pgm.instrs[pc].handler.func_name
+    # RPython can not call __str__
+    return "%d:%s" % (pc, pgm.instrs[pc].str())
 
 # The union of the red and green vars must include the live variables
 # at the jit merge point.
@@ -42,21 +33,29 @@ class Instr:
     # a field changes, an expensive invalidation of asm code occurs.
     _immutable_fields_ = ["handler", "operands[*]"]
 
-    def __init__(self, f, opers):
-        self.handler = f
+    def __init__(self, handler, name, opers):
+        self.handler = handler
+        self.name = name
         self.operands = opers
 
     def execute(self, program):
         self.handler(self.operands, program)
 
     def __str__(self):
-        arg_str = ", ".join([ str(x) for x in self.operands ])
-        return (self.handler.func_name + " " + arg_str)
+        return self.str()
+
+    def str(self):
+        # rpython cannot call  __str__ for example in get_printable_location()
+        arg_str = ", ".join([ x.str() for x in self.operands ])
+        return ("%s %s" % (self.name, arg_str))
 
 # -- Operands
 class Operand(object):
     def set(self, program, v):
         raise TypeError("Cannot set %s to a %s" % (self, v))
+
+    def __str__(self):
+        return self.str()
 
 class RegOperand(Operand):
     _immutable_fields_ = ["register"]
@@ -64,7 +63,7 @@ class RegOperand(Operand):
     def __init__(self, v):
         self.register = v
 
-    def __str__(self): return "reg(%s)" % self.register
+    def str(self): return "reg(%s)" % self.register
     def evaluate(self, program): return program.get_reg(self.register)
     def set(self, program, v): program.set_reg(self.register, v)
 
@@ -74,7 +73,7 @@ class LabelOperand(Operand):
     def __init__(self, v):
         self.label = v
 
-    def __str__(self): return "label(%s)" % self.label
+    def str(self): return "label(%s)" % self.label
     def dispatch(self, program): program.set_pc(program.get_label(self.label))
 
 class ConstOperand(Operand):
@@ -83,7 +82,7 @@ class ConstOperand(Operand):
     def __init__(self, v):
         self.value = v
 
-    def __str__(self): return "const(%s)" % self.value
+    def str(self): return "const(%s)" % self.value
     def evaluate(self, program): return self.value
 
 

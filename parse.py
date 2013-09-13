@@ -56,7 +56,11 @@ def parse_instr(s):
 
     args = [ parse_operand(x) for x in args_raw ]
 
-    return Instr(f, args)
+    # Note that you cant reflect on functions in rpython, so we
+    # have to pass the name of the opcode in aswell as the function
+    # itself. Ideally we would have done: f.function_name, however,
+    # this is not RPython
+    return Instr(f, opcode, args)
 
 def _strip(s):
     start, stop = 0, 0
