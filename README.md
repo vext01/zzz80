@@ -1,8 +1,6 @@
 # zzz80
 
-A slow interpreter for an simple imaginary CPU.
-
-The end goal is to JIT this with pypy.
+An imaginary assembler language jitted with RPython.
 
 ## Architecture
 
